@@ -1,0 +1,188 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Person {
+  id            Int             @id @default(autoincrement())
+  username      String          @unique
+  password      String
+  visitors      Visitor[]
+  roleForPerson RoleForPerson[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime?       @updatedAt
+  isActive      Boolean         @default(true)
+}
+
+model Print {
+  id        Int       @id @default(autoincrement())
+  userId    String    @unique
+  name      String?
+  Visitor   Visitor[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  isActive  Boolean   @default(true)
+}
+
+model Profile {
+  id        Int       @id @default(autoincrement())
+  bio       String
+  visitor   Visitor[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  isActive  Boolean   @default(true)
+}
+
+model Role {
+  id            Int             @id @default(autoincrement())
+  name          String
+  roleForPerson RoleForPerson[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime?       @updatedAt
+  isActive      Boolean         @default(true)
+}
+
+model RoleForPerson {
+  id        Int       @id @default(autoincrement())
+  person    Person    @relation(fields: [personId], references: [id])
+  personId  Int      
+  role      Role      @relation(fields: [roleId], references: [id])
+  roleId    Int       
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  isActive  Boolean   @default(true)
+
+}
+
+model Door {
+  id        Int            @id @default(autoincrement())
+  name      String
+  logs      Visitor_Logs[]
+  Visitor   Visitor[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime?      @updatedAt
+  isActive  Boolean        @default(true)
+}
+
+model Gender {
+  id        Int       @id @default(autoincrement())
+  name      String?
+  visiter   Visitor[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  isActive  Boolean   @default(true)
+}
+
+model Directorate {
+  id         Int          @id @default(autoincrement())
+  name       String?
+  visiter    Visitor[]
+  Department Department[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime?    @updatedAt
+  isActive   Boolean      @default(true)
+}
+
+model Bank {
+  id          Int       @id @default(autoincrement())
+  name        String
+  nameEnglish String?
+  Bankid      Int?
+  status      Int?
+  visiter     Visitor[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  isActive    Boolean   @default(true)
+}
+
+model Ministry {
+  id        Int       @id @default(autoincrement())
+  name      String
+  code      Int?
+  visiter   Visitor[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  isActive  Boolean   @default(true)
+}
+
+model Department {
+  id            Int         @id @default(autoincrement())
+  name          String?
+  directorate   Directorate @relation(fields: [directorateId], references: [id])
+  directorateId Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime?   @updatedAt
+  isActive      Boolean     @default(true)
+  Visitor       Visitor[]
+}
+
+model Event {
+  id        Int       @id @default(autoincrement())
+  name      String?
+  fromDate  DateTime
+  toDate    DateTime
+  visiter   Visitor[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  isActive  Boolean   @default(true)
+}
+
+model Visitor {
+  id              Int            @id @default(autoincrement())
+  fullname        String
+  email           String?
+  job_description String?
+  destination     String?
+  mobile          String?
+  h_Name          String?
+  h_Department    String?
+  h_Directorate   String?
+  note            String?
+  fromDate        DateTime
+  toDate          DateTime?
+  Department      Department?    @relation(fields: [departmentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  departmentId    Int?
+  Directorate     Directorate?   @relation(fields: [directorateId], references: [id])
+  directorateId   Int?
+  Profile         Profile?       @relation(fields: [profileId], references: [id])
+  profileId       Int?
+  Gender          Gender?        @relation(fields: [genderId], references: [id])
+  genderId        Int?
+  Author          Person         @relation(fields: [authorId], references: [id])
+  authorId        Int
+  Event           Event?         @relation(fields: [eventId], references: [id])
+  eventId         Int?
+  Print           Print?         @relation(fields: [printId], references: [id])
+  printId         Int?
+  Bank            Bank?          @relation(fields: [bankId], references: [id])
+  bankId          Int?
+  Ministry        Ministry?      @relation(fields: [ministryId], references: [id])
+  ministryId      Int?
+  Door            Door?          @relation(fields: [doorId], references: [id])
+  doorId          Int?
+  Logs            Visitor_Logs[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime?      @updatedAt
+  isActive        Boolean        @default(true)
+}
+
+model Visitor_Logs {
+  id          Int       @id @default(autoincrement())
+  mainDoorIn  DateTime?
+  mainDoorOut DateTime?
+  door        Door?     @relation(fields: [doorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  doorId      Int?
+  subDoorIn   DateTime?
+  subDoorOut  DateTime?
+  Visitor     Visitor?  @relation(fields: [visitorId], references: [id])
+  visitorId   Int?
+  online      Boolean   @default(true)
+  day         DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  isActive    Boolean   @default(true)
+}
